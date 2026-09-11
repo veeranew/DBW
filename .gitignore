@@ -1,0 +1,22 @@
+# Gradle build outputs & caches
+.gradle/
+build/
+app/build/
+**/build/
+
+# Local configuration files
+local.properties
+
+# IDE & Editor files
+.idea/
+*.iml
+.vscode/
+
+# Node.js
+node_modules/
+npm-debug.log*
+server.js
+
+# OS generated files
+.DS_Store
+Thumbs.db

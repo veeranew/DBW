@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalTrack Pro - Smart Health Metrics Tracking</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome icons for healthcare UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark font-normal">
+    <div id="app" class="app-container">
+        <!-- Top Navigation Bar -->
+        <header class="top-app-bar">
+            <div class="brand-section">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>VitalTrack Pro</h1>
+                    <span class="brand-tag">Health Companion</span>
+                </div>
+            </div>
+            
+            <div class="top-bar-actions">
+                <button id="btn-voice-log" class="icon-button mic-btn" title="Voice Assisted Vital Entry" onclick="app.openVoiceModal()">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+                <button id="btn-font-scale" class="icon-button" title="Toggle Large Font Mode for Readability" aria-label="Toggle Font Size">
+                    <i class="fa-solid fa-font"></i>
+                    <span class="badge-text">Aa</span>
+                </button>
+                <button id="btn-theme-toggle" class="icon-button" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <div class="user-avatar" id="btn-open-profile" title="User Profile">
+                    <span>JD</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content View Area -->
+        <main class="main-content">
+            <!-- Global Health Status Banner -->
+            <section class="status-banner status-good" id="global-status-banner">
+                <div class="status-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="status-info">
+                    <h2 id="status-title">All Key Vitals Optimal</h2>
+                    <p id="status-desc">Your 7-day readings for Blood Sugar and Blood Pressure are within target doctor range.</p>
+                </div>
+                <button class="status-action-btn" id="btn-quick-report">
+                    <i class="fa-solid fa-file-pdf"></i> Export Summary
+                </button>
+            </section>
+
+            <!-- Navigation Tabs for Desktop / Screen Selector -->
+            <nav class="screen-tabs">
+                <button class="tab-btn active" data-screen="dashboard">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </button>
+                <button class="tab-btn" data-screen="bloodsugar">
+                    <i class="fa-solid fa-droplet"></i> Blood Sugar
+                </button>
+                <button class="tab-btn" data-screen="bloodpressure">
+                    <i class="fa-solid fa-heart"></i> Blood Pressure
+                </button>
+                <button class="tab-btn" data-screen="weightbmi">
+                    <i class="fa-solid fa-weight-scale"></i> Weight & BMI
+                </button>
+                <button class="tab-btn" data-screen="reports">
+                    <i class="fa-solid fa-file-medical"></i> Reports
+                </button>
+                <button class="tab-btn" data-screen="reminders">
+                    <i class="fa-solid fa-bell"></i> Reminders
+                </button>
+            </nav>
+
+            <!-- ================= SCREEN 1: DASHBOARD ================= -->
+            <div id="screen-dashboard" class="screen-view active">
+                <div class="dashboard-grid">
+                    <!-- Metric Card 1: Blood Sugar -->
+                    <div class="metric-card card-sugar">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-droplet icon-sugar"></i>
+                                <span>Blood Sugar</span>
+                            </div>
+                            <span class="status-pill pill-normal" id="dash-sugar-pill">Normal</span>
+                        </div>
+                        <div class="card-value-container">
+                            <span class="metric-number" id="dash-sugar-val">105</span>
+                            <span class="metric-unit">mg/dL</span>
+                        </div>
+                        <div class="card-subtext">
+                            <span class="context-tag" id="dash-sugar-context"><i class="fa-solid fa-sun"></i> Fasting</span>
+                            <span class="timestamp" id="dash-sugar-time">Today, 8:15 AM</span>
+                        </div>
+                        <div class="mini-chart-container">
+                            <svg id="sparkline-sugar" class="sparkline-svg" viewBox="0 0 200 40"></svg>
+                        </div>
+                        <button class="card-add-btn" onclick="app.openLoggerModal('sugar')">
+                            <i class="fa-solid fa-plus"></i> Add Blood Sugar
+                        </button>
+                    </div>
+
+                    <!-- Metric Card 2: Blood Pressure -->
+                    <div class="metric-card card-bp">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-heart icon-bp"></i>
+                                <span>Blood Pressure</span>
+                            </div>
+                            <span class="status-pill pill-normal" id="dash-bp-pill">Normal</span>
+                        </div>
+                        <div class="card-value-container">
+                            <span class="metric-number" id="dash-bp-val">120 / 80</span>
+                            <span class="metric-unit">mmHg</span>
+                        </div>
+                        <div class="card-subtext">
+                            <span><i class="fa-solid fa-wave-square"></i> Pulse: <strong id="dash-bp-pulse">72</strong> bpm</span>
+                            <span class="timestamp" id="dash-bp-time">Today, 7:30 AM</span>
+                        </div>
+                        <div class="mini-chart-container">
+                            <svg id="sparkline-bp" class="sparkline-svg" viewBox="0 0 200 40"></svg>
+                        </div>
+                        <button class="card-add-btn" onclick="app.openLoggerModal('bp')">
+                            <i class="fa-solid fa-plus"></i> Add Blood Pressure
+                        </button>
+                    </div>
+
+                    <!-- Metric Card 3: Weight & BMI -->
+                    <div class="metric-card card-weight">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-weight-scale icon-weight"></i>
+                                <span>Weight & BMI</span>
+                            </div>
+                            <span class="status-pill pill-normal" id="dash-bmi-pill">BMI 23.8</span>
+                        </div>
+                        <div class="card-value-container">
+                            <span class="metric-number" id="dash-weight-val">74.5</span>
+                            <span class="metric-unit">kg</span>
+                        </div>
+                        <div class="card-subtext">
+                            <span>Category: <strong id="dash-bmi-cat">Normal Weight</strong></span>
+                            <span class="timestamp" id="dash-weight-time">Yesterday</span>
+                        </div>
+                        <div class="bmi-mini-bar">
+                            <div class="bmi-track">
+                                <div class="bmi-pointer" id="dash-bmi-pointer" style="left: 45%;"></div>
+                            </div>
+                            <div class="bmi-labels">
+                                <span>18.5</span>
+                                <span>25.0</span>
+                                <span>30.0</span>
+                            </div>
+                        </div>
+                        <button class="card-add-btn" onclick="app.openLoggerModal('weight')">
+                            <i class="fa-solid fa-plus"></i> Add Weight Log
+                        </button>
+                    </div>
+
+                    <!-- Metric Card 4: Weekly Summary Overview -->
+                    <div class="metric-card card-summary">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-shield-halved icon-summary"></i>
+                                <span>Health Summary (7 Days)</span>
+                            </div>
+                            <button class="btn-text" onclick="app.switchScreen('reports')">View All</button>
+                        </div>
+                        <div class="summary-stats-list">
+                            <div class="summary-stat-item">
+                                <span class="stat-label">Avg Blood Sugar</span>
+                                <span class="stat-val" id="summary-avg-sugar">108 mg/dL</span>
+                            </div>
+                            <div class="summary-stat-item">
+                                <span class="stat-label">Avg Blood Pressure</span>
+                                <span class="stat-val" id="summary-avg-bp">121/79 mmHg</span>
+                            </div>
+                            <div class="summary-stat-item">
+                                <span class="stat-label">Time in Normal Sugar Range</span>
+                                <span class="stat-val text-success" id="summary-in-range">94%</span>
+                            </div>
+                            <div class="summary-stat-item">
+                                <span class="stat-label">Target Weight Goal</span>
+                                <span class="stat-val" id="summary-weight-goal">72.0 kg (2.5kg left)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <section class="section-container">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity Logs</h3>
+                        <button class="btn-secondary" id="btn-export-csv"><i class="fa-solid fa-download"></i> Export Data</button>
+                    </div>
+                    <div class="history-list" id="dashboard-recent-logs">
+                        <!-- Dynamic content filled by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= SCREEN 2: BLOOD SUGAR MODULE ================= -->
+            <div id="screen-bloodsugar" class="screen-view">
+                <div class="module-header">
+                    <h2><i class="fa-solid fa-droplet text-sugar"></i> Blood Sugar Tracking</h2>
+                    <button class="btn-primary" onclick="app.openLoggerModal('sugar')">
+                        <i class="fa-solid fa-plus"></i> New Reading
+                    </button>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-toolbar">
+                        <div class="timeframe-selector">
+                            <button class="timeframe-btn active" onclick="app.renderSugarChart(7)">7 Days</button>
+                            <button class="timeframe-btn" onclick="app.renderSugarChart(30)">30 Days</button>
+                            <button class="timeframe-btn" onclick="app.renderSugarChart(90)">90 Days</button>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="legend-dot dot-fasting"></span> Fasting</span>
+                            <span class="legend-item"><span class="legend-dot dot-after"></span> After Meal</span>
+                            <span class="legend-item"><span class="legend-target-band"></span> Target Range (70-130)</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-container">
+                        <svg id="sugar-main-chart" class="main-chart-svg" viewBox="0 0 800 240"></svg>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <div class="history-filters">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="sugar-search" placeholder="Search notes or dates..." oninput="app.filterSugarLogs()">
+                        </div>
+                        <select id="sugar-filter-context" onchange="app.filterSugarLogs()" class="select-input">
+                            <option value="ALL">All Contexts</option>
+                            <option value="FASTING">Fasting</option>
+                            <option value="BEFORE_MEAL">Before Meal</option>
+                            <option value="AFTER_MEAL">After Meal</option>
+                            <option value="BEDTIME">Bedtime</option>
+                        </select>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Value (mg/dL)</th>
+                                    <th>Context</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sugar-table-body">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 3: BLOOD PRESSURE MODULE ================= -->
+            <div id="screen-bloodpressure" class="screen-view">
+                <div class="module-header">
+                    <h2><i class="fa-solid fa-heart text-bp"></i> Blood Pressure Tracking</h2>
+                    <button class="btn-primary" onclick="app.openLoggerModal('bp')">
+                        <i class="fa-solid fa-plus"></i> New BP Log
+                    </button>
+                </div>
+
+                <div class="aha-classification-banner">
+                    <div class="aha-badge" id="current-aha-badge">
+                        <i class="fa-solid fa-heart-circle-check"></i> Normal Blood Pressure (<120 / <80 mmHg)
+                    </div>
+                    <p class="aha-desc">Based on American Heart Association (AHA) guidelines for adults.</p>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-toolbar">
+                        <div class="timeframe-selector">
+                            <button class="timeframe-btn active" onclick="app.renderBPChart(7)">7 Days</button>
+                            <button class="timeframe-btn" onclick="app.renderBPChart(30)">30 Days</button>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="legend-dot dot-sys"></span> Systolic</span>
+                            <span class="legend-item"><span class="legend-dot dot-dia"></span> Diastolic</span>
+                            <span class="legend-item"><span class="legend-dot dot-pulse"></span> Pulse (bpm)</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-container">
+                        <svg id="bp-main-chart" class="main-chart-svg" viewBox="0 0 800 240"></svg>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Systolic / Diastolic</th>
+                                    <th>Pulse</th>
+                                    <th>Category</th>
+                                    <th>Notes</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bp-table-body">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 4: WEIGHT & BMI MODULE ================= -->
+            <div id="screen-weightbmi" class="screen-view">
+                <div class="module-header">
+                    <h2><i class="fa-solid fa-weight-scale text-weight"></i> Weight & BMI Goal Tracker</h2>
+                    <button class="btn-primary" onclick="app.openLoggerModal('weight')">
+                        <i class="fa-solid fa-plus"></i> Log Weight
+                    </button>
+                </div>
+
+                <div class="bmi-calculator-card">
+                    <div class="bmi-score-display">
+                        <div class="bmi-number-circle" id="bmi-score-big">
+                            23.8
+                        </div>
+                        <div class="bmi-details">
+                            <span class="bmi-label">Body Mass Index (BMI)</span>
+                            <h3 class="bmi-status-text" id="bmi-cat-big">Normal Weight</h3>
+                            <p class="bmi-range-info">Healthy range for your height (177 cm): <strong>58.0 kg – 78.0 kg</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="bmi-full-scale">
+                        <div class="scale-bar">
+                            <div class="scale-seg seg-under" title="Underweight (< 18.5)">Underweight</div>
+                            <div class="scale-seg seg-normal" title="Normal (18.5 - 24.9)">Normal</div>
+                            <div class="scale-seg seg-over" title="Overweight (25.0 - 29.9)">Overweight</div>
+                            <div class="scale-seg seg-obese" title="Obese (≥ 30.0)">Obese</div>
+                        </div>
+                        <div class="scale-indicator" id="bmi-scale-marker" style="left: 45%;">
+                            <i class="fa-solid fa-caret-up"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="goal-progress-card">
+                    <div class="goal-header">
+                        <h3><i class="fa-solid fa-bullseye"></i> Weight Loss Goal Progress</h3>
+                        <span class="goal-target-text">Target: <strong id="user-target-weight">72.0 kg</strong></span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" id="weight-goal-progress-fill" style="width: 65%;"></div>
+                    </div>
+                    <div class="progress-footer">
+                        <span>Start: 79.0 kg</span>
+                        <span id="weight-progress-pct">65% Achieved</span>
+                        <span>Current: 74.5 kg</span>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-toolbar">
+                        <h3>Weight History Trend</h3>
+                    </div>
+                    <div class="chart-canvas-container">
+                        <svg id="weight-main-chart" class="main-chart-svg" viewBox="0 0 800 220"></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 5: DOCTOR REPORTS & PDF EXPORT ================= -->
+            <div id="screen-reports" class="screen-view">
+                <div class="module-header">
+                    <h2><i class="fa-solid fa-file-medical text-primary"></i> Medical Reports & Doctor Export</h2>
+                    <button class="btn-primary btn-large" onclick="app.generatePDFReport()">
+                        <i class="fa-solid fa-file-pdf"></i> Download Doctor PDF Report
+                    </button>
+                </div>
+
+                <div class="reports-control-panel">
+                    <div class="control-group">
+                        <label>Select Report Period:</label>
+                        <select id="report-period-select" class="select-input" onchange="app.updateReportPreview()">
+                            <option value="7">Last 7 Days (Weekly Summary)</option>
+                            <option value="30" selected>Last 30 Days (Monthly Summary)</option>
+                            <option value="90">Last 90 Days (Quarterly Summary)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Include Notes & Medication Log:</label>
+                        <input type="checkbox" id="report-include-notes" checked onchange="app.updateReportPreview()">
+                    </div>
+                </div>
+
+                <!-- Printable Doctor Summary Document Preview -->
+                <div class="doctor-pdf-preview" id="pdf-preview-document">
+                    <div class="pdf-header">
+                        <div class="pdf-doctor-brand">
+                            <i class="fa-solid fa-notes-medical"></i>
+                            <div>
+                                <h2>VitalTrack Pro Medical Report</h2>
+                                <p>Comprehensive Health Metrics Summary for Physician Review</p>
+                            </div>
+                        </div>
+                        <div class="pdf-patient-info">
+                            <p><strong>Patient:</strong> John Doe (Age 52, Male)</p>
+                            <p><strong>Height:</strong> 177 cm | <strong>Current Weight:</strong> 74.5 kg</p>
+                            <p><strong>Report Date:</strong> <span id="pdf-gen-date">August 02, 2026</span></p>
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <div class="pdf-summary-section">
+                        <h3>1. Executive Health Metrics Summary</h3>
+                        <div class="pdf-grid-stats">
+                            <div class="pdf-stat-box">
+                                <span class="box-title">Blood Sugar Avg</span>
+                                <span class="box-val" id="pdf-sugar-avg">108 mg/dL</span>
+                                <span class="box-sub">Target: 70 - 130 mg/dL</span>
+                            </div>
+                            <div class="pdf-stat-box">
+                                <span class="box-title">Blood Pressure Avg</span>
+                                <span class="box-val" id="pdf-bp-avg">121 / 79 mmHg</span>
+                                <span class="box-sub">AHA Status: Normal</span>
+                            </div>
+                            <div class="pdf-stat-box">
+                                <span class="box-title">Time In Sugar Range</span>
+                                <span class="box-val" id="pdf-sugar-tir">94%</span>
+                                <span class="box-sub">Hyper/Hypo: 1 Reading</span>
+                            </div>
+                            <div class="pdf-stat-box">
+                                <span class="box-title">BMI & Weight Goal</span>
+                                <span class="box-val" id="pdf-bmi-val">23.8 (Normal)</span>
+                                <span class="box-sub">Goal: 72.0 kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pdf-detail-table-section">
+                        <h3>2. Detailed Readings Log History</h3>
+                        <table class="pdf-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Metric Type</th>
+                                    <th>Reading Value</th>
+                                    <th>Clinical Context</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pdf-history-table">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 6: REMINDERS & NOTIFICATIONS ================= -->
+            <div id="screen-reminders" class="screen-view">
+                <div class="module-header">
+                    <h2><i class="fa-solid fa-bell text-warning"></i> Medication & Log Reminders</h2>
+                    <button class="btn-primary" onclick="app.openReminderModal()">
+                        <i class="fa-solid fa-plus"></i> Add Reminder
+                    </button>
+                </div>
+
+                <div class="reminders-list" id="reminders-container">
+                    <!-- Dynamic Reminders -->
+                </div>
+            </div>
+
+            <!-- ================= SCREEN 7: PROFILE & PREFERENCES ================= -->
+            <div id="screen-profile" class="screen-view">
+                <div class="module-header">
+                    <h2><i class="fa-solid fa-user-gear"></i> Patient Profile & Preferences</h2>
+                </div>
+
+                <div class="profile-grid">
+                    <form class="profile-card" id="profile-form" onsubmit="app.saveProfile(event)">
+                        <h3>Personal Health Attributes</h3>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="prof-name" class="text-input" value="John Doe" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Age</label>
+                                <input type="number" id="prof-age" class="text-input" value="52" min="1" max="120" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select id="prof-gender" class="select-input">
+                                    <option value="MALE" selected>Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Height (cm)</label>
+                                <input type="number" id="prof-height" class="text-input" value="177" min="50" max="250" required oninput="app.calculateProfileBMI()">
+                            </div>
+                            <div class="form-group">
+                                <label>Weight Goal (kg)</label>
+                                <input type="number" id="prof-weight-goal" class="text-input" value="72.0" step="0.1" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Profile Settings</button>
+                    </form>
+
+                    <!-- Monetization & Subscription Card -->
+                    <div class="subscription-card">
+                        <div class="sub-header">
+                            <span class="sub-badge">VitalTrack Premium</span>
+                            <h3>Upgrade to Premium Account</h3>
+                        </div>
+                        <ul class="sub-features">
+                            <li><i class="fa-solid fa-circle-check"></i> Unlimited Doctor PDF Exports</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Multi-Profile & Caregiver Accounts</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Automated Cloud Backup & Encryption</li>
+                            <li><i class="fa-solid fa-circle-check"></i> AI Smart Health Trend Alerts</li>
+                        </ul>
+                        <button class="btn-upgrade" onclick="alert('Google Play Billing Premium purchase simulated!')">
+                            <i class="fa-solid fa-crown"></i> Upgrade for $4.99/mo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Floating Quick-Add Action Button (Mobile One-Hand Access) -->
+        <div class="fab-wrapper">
+            <button class="fab-main" id="fab-main" title="Quick Add Measurement">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="fab-menu" id="fab-menu">
+                <button class="fab-item fab-sugar" onclick="app.openLoggerModal('sugar')" title="Add Sugar Reading">
+                    <i class="fa-solid fa-droplet"></i> Sugar
+                </button>
+                <button class="fab-item fab-bp" onclick="app.openLoggerModal('bp')" title="Add Pressure Log">
+                    <i class="fa-solid fa-heart"></i> BP
+                </button>
+                <button class="fab-item fab-weight" onclick="app.openLoggerModal('weight')" title="Add Weight Log">
+                    <i class="fa-solid fa-weight-scale"></i> Weight
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar for Mobile -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-screen="dashboard">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-item" data-screen="bloodsugar">
+                <i class="fa-solid fa-droplet"></i>
+                <span>Sugar</span>
+            </button>
+            <button class="nav-item" data-screen="bloodpressure">
+                <i class="fa-solid fa-heart"></i>
+                <span>BP</span>
+            </button>
+            <button class="nav-item" data-screen="weightbmi">
+                <i class="fa-solid fa-weight-scale"></i>
+                <span>Weight</span>
+            </button>
+            <button class="nav-item" data-screen="reports">
+                <i class="fa-solid fa-file-medical"></i>
+                <span>Reports</span>
+            </button>
+        </nav>
+
+        <!-- MODAL DIALOG: METRIC LOGGER -->
+        <div class="modal-overlay" id="logger-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3 id="modal-title"><i class="fa-solid fa-plus"></i> Log Measurement</h3>
+                    <button class="btn-close" onclick="app.closeLoggerModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modal-body-content">
+                    <!-- Dynamic form based on type (sugar, bp, weight) -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DIALOG: ADD REMINDER -->
+        <div class="modal-overlay" id="reminder-modal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-bell"></i> New Health Reminder</h3>
+                    <button class="btn-close" onclick="app.closeReminderModal()">&times;</button>
+                </div>
+                <form class="modal-body" onsubmit="app.saveReminder(event)">
+                    <div class="form-group">
+                        <label>Reminder Title</label>
+                        <input type="text" id="rem-title" class="text-input" placeholder="e.g. Fasting Sugar Log or Metformin" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" id="rem-time" class="text-input" value="08:00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="rem-category" class="select-input">
+                                <option value="LOG">Measurement Log</option>
+                                <option value="MEDICATION">Medication</option>
+                                <option value="OTHER">General</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">
+                        <i class="fa-solid fa-check"></i> Set Reminder
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL DIALOG: VOICE ASSISTED VITAL LOGGING -->
+        <div class="modal-overlay" id="voice-modal">
+            <div class="modal-card voice-card">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-microphone"></i> Voice Vital Logging</h3>
+                    <button class="btn-close" onclick="app.closeVoiceModal()">&times;</button>
+                </div>
+                <div class="modal-body text-center" style="padding: 1.5rem;">
+                    <div class="voice-mic-ring" id="mic-ring" onclick="app.startVoiceRecognition()">
+                        <i class="fa-solid fa-microphone-lines mic-icon-large"></i>
+                    </div>
+                    <p class="voice-status" id="voice-status">Tap mic and speak (e.g., <strong>"Sugar 115 fasting"</strong> or <strong>"BP 120 over 80"</strong>)</p>
+                    <div class="voice-transcript-box" id="voice-transcript">
+                        <span class="placeholder-text">Listening...</span>
+                    </div>
+                    <button class="btn-primary" style="width: 100%; margin-top: 1.2rem;" onclick="app.processSpokenText()">
+                        <i class="fa-solid fa-check"></i> Confirm & Save Log
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
